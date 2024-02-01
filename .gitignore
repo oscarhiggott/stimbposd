@@ -1,5 +1,6 @@
 env
 .vscode
 cov.xml
+.coverage
 __pycache__
 tests/gen_test_data.py

@@ -15,5 +15,6 @@ dependencies = [
     "stim",
     "sinter",
     "ldpc",
-    "beliefmatching"
+    "beliefmatching",
+    "numpy"
 ]

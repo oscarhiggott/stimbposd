@@ -1,6 +1,7 @@
 import pathlib
 
-from sinter import Decoder
+from sinter import Decoder, CompiledDecoder
+import numpy as np
 
 import stim
 
@@ -13,6 +14,22 @@ from stimbposd.config import (
 )
 
 
+class BPOSDCompiledDecoder(CompiledDecoder):
+    def __init__(self, decoder: "BPOSD"):
+        self.decoder = decoder
+
+    def decode_shots_bit_packed(
+        self,
+        *,
+        bit_packed_detection_event_data: "np.ndarray",
+    ) -> "np.ndarray":
+        return self.decoder.decode_batch(
+            shots=bit_packed_detection_event_data,
+            bit_packed_shots=True,
+            bit_packed_predictions=True,
+        )
+
+
 class BPOSDSinterDecoder(Decoder):
     def __init__(
         self,
@@ -22,11 +39,44 @@ class BPOSDSinterDecoder(Decoder):
         osd_method: str = DEFAULT_OSD_METHOD,
         **bposd_kwargs,
     ):
+        f"""Class for decoding stim circuits with sinter using belief propagation and ordered statistics decoding (BP+OSD).
+        This class uses Joschka Roffe's BP+OSD decoder as a subroutine. For more information on the options and 
+        implementation of the BP+OSD subroutine, see the documentation of the LDPC library: https://roffe.eu/software/ldpc/index.html.
+        Additional keyword arguments are passed to the ``bposd_decoder`` class of the ldpc Python package.
+
+        Parameters
+        ----------
+        model : stim.DetectorErrorModel
+            The detector error model of the stim circuit to be decoded
+        max_bp_iters : int, optional
+            The maximum number of iterations of belief propagation to be used, by default {DEFAULT_MAX_BP_ITERS}
+        bp_method : str, optional
+            The BP method. Currently three methods are implemented: 1) "product_sum": product sum updates;
+            2) "min_sum": min-sum updates; 3) "min_sum_log": min-sum log updates, by default {DEFAULT_BP_METHOD}
+        osd_order : int, optional
+            The OSD order, by default {DEFAULT_OSD_ORDER}
+        osd_method : str, optional
+            The OSD method. Currently three methods are available: 1) "osd_0": Zero-oder OSD; 2) "osd_e": 
+            exhaustive OSD; 3) "osd_cs": combination-sweep OSD., by default {DEFAULT_OSD_METHOD}
+        """
         self.max_bp_iters = max_bp_iters
         self.bp_method = bp_method
         self.osd_order = osd_order
         self.osd_method = osd_method
         self.bposd_kwargs = bposd_kwargs
+
+    def compile_decoder_for_dem(
+        self, *, dem: stim.DetectorErrorModel
+    ) -> CompiledDecoder:
+        bposd = BPOSD(
+            model=dem,
+            max_bp_iters=self.max_bp_iters,
+            bp_method=self.bp_method,
+            osd_order=self.osd_order,
+            osd_method=self.osd_method,
+            **self.bposd_kwargs,
+        )
+        return BPOSDCompiledDecoder(bposd)
 
     def decode_via_files(
         self,
