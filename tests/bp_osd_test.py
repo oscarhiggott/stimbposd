@@ -6,7 +6,7 @@ import numpy as np
 import stim
 from sinter._decoding import sample_decode
 
-from stimbposd import BPOSD, BPOSDSinterDecoder
+from stimbposd import BPOSD, SinterDecoder_BPOSD
 
 TEST_DATA_DIR = Path(__file__).resolve().parent / "data"
 
@@ -52,7 +52,7 @@ def test_sinter_decode_repetition_code(force_streaming: Optional[bool]):
         num_shots=1000,
         decoder="bposd",
         __private__unstable__force_decode_on_disk=force_streaming,
-        custom_decoders={"bposd": BPOSDSinterDecoder()},
+        custom_decoders={"bposd": SinterDecoder_BPOSD()},
     )
     assert 1 <= result.errors <= 100
     assert result.shots == 1000
@@ -76,7 +76,7 @@ def test_sinter_decode_quasi_cyclic(filename: str, force_streaming: Optional[boo
         num_shots=20,
         decoder="bposd",
         __private__unstable__force_decode_on_disk=force_streaming,
-        custom_decoders={"bposd": BPOSDSinterDecoder()},
+        custom_decoders={"bposd": SinterDecoder_BPOSD()},
     )
     assert result.discards == 0
     assert 0 <= result.errors <= 2

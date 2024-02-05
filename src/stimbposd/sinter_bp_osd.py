@@ -14,7 +14,7 @@ from stimbposd.config import (
 )
 
 
-class BPOSDCompiledDecoder(CompiledDecoder):
+class SinterCompiledDecoder_BPOSD(CompiledDecoder):
     def __init__(self, decoder: "BPOSD"):
         self.decoder = decoder
 
@@ -30,7 +30,7 @@ class BPOSDCompiledDecoder(CompiledDecoder):
         )
 
 
-class BPOSDSinterDecoder(Decoder):
+class SinterDecoder_BPOSD(Decoder):
     def __init__(
         self,
         max_bp_iters: int = DEFAULT_MAX_BP_ITERS,
@@ -76,7 +76,7 @@ class BPOSDSinterDecoder(Decoder):
             osd_method=self.osd_method,
             **self.bposd_kwargs,
         )
-        return BPOSDCompiledDecoder(bposd)
+        return SinterCompiledDecoder_BPOSD(bposd)
 
     def decode_via_files(
         self,
