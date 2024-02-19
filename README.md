@@ -2,7 +2,79 @@
 
 An implementation of the BP+OSD decoder for circuit-level noise. This package provides functionality to decode stim circuits using the [LDPC](https://github.com/quantumgizmos/ldpc) python package.
 
-Included is a `stimbposd.BPOSD` class that is configured using a `stim.DetectorErrorModel` and decodes shot data, directly outputting predicted observables (without sinter), as well as a `stimbposd.BPOSDSinterDecoder` class, which subclasses `sinter.Decoder`, for interfacing with sinter.
+Included is a `stimbposd.BPOSD` class that is configured using a `stim.DetectorErrorModel` and decodes shot data, directly outputting predicted observables (without sinter), as well as a `stimbposd.SinterDecoder_BPOSD` class, which subclasses `sinter.Decoder`, for interfacing with sinter.
+
+## Installation
+
+To install from pypi, run:
+```
+pip install stimbposd
+```
+
+To install from source, run:
+```
+pip install -e .
+```
+from the root directory.
+
+## Usage
+
+Here is an example of how the decoder can be used directly with Stim:
+
+```python
+import stim
+import numpy as np
+from stimbposd import BPOSD
+
+num_shots = 100
+d = 5
+p = 0.007
+circuit = stim.Circuit.generated(
+    "surface_code:rotated_memory_x",
+    rounds=d,
+    distance=d,
+    before_round_data_depolarization=p,
+    before_measure_flip_probability=p,
+    after_reset_flip_probability=p,
+    after_clifford_depolarization=p
+)
+
+sampler = circuit.compile_detector_sampler()
+shots, observables = sampler.sample(num_shots, separate_observables=True)
+
+decoder = BPOSD(circuit.detector_error_model(), max_bp_iters=20)
+
+predicted_observables = decoder.decode_batch(shots)
+num_mistakes = np.sum(np.any(predicted_observables != observables, axis=1))
+
+print(f"{num_mistakes}/{num_shots}")
+```
+
+### Sinter integration
+
+To integrate with [sinter](https://github.com/quantumlib/Stim/tree/main/glue/sample), you can use the 
+`stimbposd.SinterDecoder_BPOSD` class, which inherits from `sinter.Decoder`.
+To use it, you can use the `custom_decoders` argument when using `sinter.collect`:
+
+```python
+import sinter
+from stimbposd import SinterDecoder_BPOSD, sinter_decoders
+
+samples = sinter.collect(
+    num_workers=4,
+    max_shots=1_000_000,
+    max_errors=1000,
+    tasks=generate_example_tasks(),
+    decoders=['bposd'],
+    custom_decoders=sinter_decoders()
+)
+```
+
+A complete example using sinter to compare stimbposd with pymatching
+can be found in the `examples/surface_code_threshold.py` file (this file also 
+includes a definition of `generate_example_tasks()` used above).
+
+
 
 ## Performance
 
@@ -12,6 +84,4 @@ The main advantage of the decoder is that it can be applied to *any* stim circui
 
 ### Impact of short cycles on decoder performance
 
-The performance of the decoder is heavily impacted by the presence of many short cycles (e.g. of length less than 6) in the Tanner graph. One very common cause of length-four cycles in Tanner graphs of quantum error correcting codes and circuits is Y errors in circuits implementing CSS codes when both $X$ *and* $Z$ checks are annotated as detectors in the circuit. *It is therefore strongly recommended that only $X$ or $Z$ checks are annotated in circuits when using this package (use whichever basis is needed to predict the annotated logical observables).* This also has the benefit of making the DEM significantly smaller, leading to a large speed up of BP+OSD.
-
-More specifically, if an $X$ check and a $Z$ check have any qubits in common in their support, they must overlap on at least two qubits ($q_i$ and $q_j$, say) to commute. Let $D_X$ and $D_Z$ be detectors measuring the $X$ and $Z$ check, respectively, and suppose that the errors $Y_i$ and $Y_j$ exist in the error model. The Tanner graph of the code will therefore have the 4-cycle ($D_X$, $Y_i$, $D_Z$, $Y_j$), since $Y_i$ and $Y_j$ each trigger both detectors. These 4-cycles are often ubiquitous and significantly degrade BP, and so removing either the $X$ or $Z$ checks (whichever is not needed to predict the observables) can improve accuracy, even though this technically removes information from the DEM.
+The performance of the decoder can be impacted by the presence of many short cycles (e.g. of length less than 6) in the Tanner graph. One common cause of length-four cycles in Tanner graphs of quantum error correcting codes and circuits is Y errors in circuits implementing CSS codes when both $X$ *and* $Z$ checks are annotated as detectors in the circuit. If an $X$ and $Z$ stabiliser commute and overlap, there will be a pair of $Y$ errors on the two qubits in common that anti-commute with both stabilisers (a 4-cycle in the Tanner graph). Depending on the circuit, it can therefore sometimes be beneficial to annotate only $X$ or $Z$ checks when using this package (use whichever basis is needed to predict the annotated logical observables). This also has the benefit of making the DEM significantly smaller, leading to a large speed up of BP+OSD.
