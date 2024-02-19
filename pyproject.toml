@@ -20,3 +20,12 @@ dependencies = [
     "ldpc ~= 0.1",
     "numpy"
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/oscarhiggott/stimbposd"
+Issues = "https://github.com/oscarhiggott/stimbposd/issues"

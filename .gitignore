@@ -1,5 +1,6 @@
 env
 .vscode
+dist
 cov.xml
 coverage.xml
 .coverage
