@@ -105,7 +105,9 @@ class BPOSD:
             `self.decode(shots[i, :])`.
         """
         if bit_packed_shots:
-            shots = np.unpackbits(shots, axis=1, bitorder="little")[:, :self.num_detectors]
+            shots = np.unpackbits(shots, axis=1, bitorder="little")[
+                :, : self.num_detectors
+            ]
         predictions = np.zeros(
             (shots.shape[0], self._matrices.observables_matrix.shape[0]), dtype=bool
         )

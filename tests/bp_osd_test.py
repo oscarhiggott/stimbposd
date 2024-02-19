@@ -65,7 +65,9 @@ def test_sinter_decode_repetition_code(force_streaming: Optional[bool]):
         ("bivariate_bicycle_nkd_72_12_6_p_0.001_round_6", False),
     ],
 )
-def test_sinter_decode_bivariate_bicycle(filename: str, force_streaming: Optional[bool]):
+def test_sinter_decode_bivariate_bicycle(
+    filename: str, force_streaming: Optional[bool]
+):
     circuit = stim.Circuit.from_file(TEST_DATA_DIR / (filename + ".stim"))
     dem = stim.DetectorErrorModel.from_file(TEST_DATA_DIR / (filename + ".dem"))
     result = sample_decode(
