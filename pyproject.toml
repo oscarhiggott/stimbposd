@@ -2,11 +2,14 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.hatch.version]
+path = "src/stimbposd/__init__.py"
+
 [project]
 name = "stimbposd"
-version = "0.0.1"
+dynamic = ["version"]
 authors = [
-  { name="Oscar Higgott"},
+  {name="Oscar Higgott"},
 ]
 description = "Decode stim circuits with belief propagation and ordered statistics decoding (BP+OSD)"
 readme = "README.md"
