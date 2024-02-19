@@ -1,6 +1,6 @@
 from ldpc.osd import bposd_decoder
 import numpy as np
-from beliefmatching import detector_error_model_to_check_matrices
+from stimbposd.dem_to_matrices import detector_error_model_to_check_matrices
 
 import stim
 
