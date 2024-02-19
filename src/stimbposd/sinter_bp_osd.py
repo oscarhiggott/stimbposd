@@ -1,5 +1,6 @@
 import pathlib
 
+from typing import Dict
 from sinter import Decoder, CompiledDecoder
 import numpy as np
 
@@ -140,3 +141,7 @@ class SinterDecoder_BPOSD(Decoder):
             format="b8",
             num_observables=dem.num_observables,
         )
+
+
+def sinter_decoders() -> Dict[str, Decoder]:
+    return {"bposd": SinterDecoder_BPOSD()}

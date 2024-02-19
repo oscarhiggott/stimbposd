@@ -6,16 +6,16 @@ import numpy as np
 import stim
 from sinter._decoding import sample_decode
 
-from stimbposd import BPOSD, SinterDecoder_BPOSD
+from stimbposd import BPOSD, SinterDecoder_BPOSD, sinter_decoders
 
 TEST_DATA_DIR = Path(__file__).resolve().parent / "data"
 
 
 @pytest.mark.parametrize(
     "filename,expected_bposd_errors,expected_vacuous_errors",
-    [("quasi_cyclic_nkd_72_12_6_p_0.001_round_6", 0, 12)],
+    [("bivariate_bicycle_nkd_72_12_6_p_0.001_round_6", 0, 12)],
 )
-def test_bposd_on_quasi_cyclic_circuits(
+def test_bposd_on_bivariate_bicycle_circuits(
     filename: str, expected_bposd_errors: int, expected_vacuous_errors: int
 ):
     circuit = stim.Circuit.from_file(TEST_DATA_DIR / (filename + ".stim"))
@@ -61,11 +61,11 @@ def test_sinter_decode_repetition_code(force_streaming: Optional[bool]):
 @pytest.mark.parametrize(
     "filename,force_streaming",
     [
-        ("quasi_cyclic_nkd_72_12_6_p_0.001_round_6", True),
-        ("quasi_cyclic_nkd_72_12_6_p_0.001_round_6", False),
+        ("bivariate_bicycle_nkd_72_12_6_p_0.001_round_6", True),
+        ("bivariate_bicycle_nkd_72_12_6_p_0.001_round_6", False),
     ],
 )
-def test_sinter_decode_quasi_cyclic(filename: str, force_streaming: Optional[bool]):
+def test_sinter_decode_bivariate_bicycle(filename: str, force_streaming: Optional[bool]):
     circuit = stim.Circuit.from_file(TEST_DATA_DIR / (filename + ".stim"))
     dem = stim.DetectorErrorModel.from_file(TEST_DATA_DIR / (filename + ".dem"))
     result = sample_decode(
@@ -76,7 +76,7 @@ def test_sinter_decode_quasi_cyclic(filename: str, force_streaming: Optional[boo
         num_shots=20,
         decoder="bposd",
         __private__unstable__force_decode_on_disk=force_streaming,
-        custom_decoders={"bposd": SinterDecoder_BPOSD()},
+        custom_decoders=sinter_decoders(),
     )
     assert result.discards == 0
     assert 0 <= result.errors <= 2
