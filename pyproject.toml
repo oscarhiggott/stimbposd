@@ -16,7 +16,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     "stim",
-    "sinter",
+    "sinter<1.14.0",
     "ldpc ~= 0.1",
     "numpy"
 ]
