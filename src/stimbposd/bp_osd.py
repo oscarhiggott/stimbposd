@@ -1,4 +1,4 @@
-from ldpc.osd import bposd_decoder
+from ldpc.bposd_decoder import BpOsdDecoder
 import numpy as np
 from stimbposd.dem_to_matrices import detector_error_model_to_check_matrices
 
@@ -49,11 +49,11 @@ class BPOSD:
         self.num_errors = model.num_errors
         h_shape = self._matrices.check_matrix.shape
         max_osd_order = h_shape[1] - h_shape[0]
-        self._bposd = bposd_decoder(
-            parity_check_matrix=self._matrices.check_matrix,
+        self._bposd = BpOsdDecoder(
+            pcm=self._matrices.check_matrix,
             max_iter=max_bp_iters,
             bp_method=bp_method,
-            channel_probs=self._matrices.priors,
+            error_channel=list(self._matrices.priors),
             osd_order=min(osd_order, max_osd_order),
             osd_method=osd_method,
             input_vector_type="syndrome",
