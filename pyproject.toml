@@ -32,7 +32,3 @@ Issues = "https://github.com/oscarhiggott/stimbposd/issues"
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff"]
-
-[project.urls]
-Homepage = "https://github.com/oscarhiggott/stimbposd"
-Issues = "https://github.com/oscarhiggott/stimbposd/issues"
