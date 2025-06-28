@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import multiprocessing
 from pathlib import Path
 
-from stimbposd import SinterDecoder_BPOSD, sinter_decoders
+from stimbposd import sinter_decoders
 
 EXAMPLES_DIR = Path(__file__).resolve().parent
 
@@ -21,7 +21,7 @@ def generate_example_tasks():
                     after_reset_flip_probability=p,
                     before_measure_flip_probability=p,
                     before_round_data_depolarization=p,
-                    code_task=f"surface_code:rotated_memory_x",
+                    code_task="surface_code:rotated_memory_x",
                 ),
                 json_metadata={
                     "p": p,
