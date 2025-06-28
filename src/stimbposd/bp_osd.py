@@ -3,20 +3,15 @@ from stimbposd.dem_to_matrices import detector_error_model_to_check_matrices
 
 try:
     from ldpc.bposd_decoder import BpOsdDecoder
+
     def create_decoder(pcm, priors, **kwargs):
-        return BpOsdDecoder(
-            pcm=pcm,
-            error_channel=list(priors),
-            **kwargs
-        )
+        return BpOsdDecoder(pcm=pcm, error_channel=list(priors), **kwargs)
 except ImportError:
     from ldpc.osd import bposd_decoder
+
     def create_decoder(pcm, priors, **kwargs):
-        return bposd_decoder(
-            parity_check_matrix=pcm,
-            channel_probs=priors,
-            **kwargs
-        )
+        return bposd_decoder(parity_check_matrix=pcm, channel_probs=priors, **kwargs)
+
 
 import stim
 

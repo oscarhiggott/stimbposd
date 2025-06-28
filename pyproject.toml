@@ -18,7 +18,7 @@ dependencies = [
     "stim",
     "sinter>=1.12.0",
     "ldpc",
-    "numpy"
+    "numpy<=2.2.6" # See: https://github.com/quantumlib/Stim/pull/965
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -29,3 +29,6 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/oscarhiggott/stimbposd"
 Issues = "https://github.com/oscarhiggott/stimbposd/issues"
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
