@@ -128,3 +128,25 @@ def test_sinter_decode_noiseless_repetition_code():
     )
     assert result.errors == 0
     assert result.shots == 1000
+
+
+def test_sinter_decoders_dict():
+    circuit = stim.Circuit.generated(
+        "repetition_code:memory",
+        rounds=3,
+        distance=3,
+        after_clifford_depolarization=0.05,
+    )
+    decoders = sinter_decoders()
+    for decoder_name in decoders:
+        result = sample_decode(
+            circuit_obj=circuit,
+            circuit_path=None,
+            dem_obj=circuit.detector_error_model(decompose_errors=True),
+            dem_path=None,
+            num_shots=100,
+            decoder=decoder_name,
+            custom_decoders=decoders,
+        )
+        assert 0 <= result.errors <= 20
+        assert result.shots == 100
