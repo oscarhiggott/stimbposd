@@ -150,6 +150,14 @@ def sinter_decoders() -> Dict[str, Decoder]:
             schedule="serial",
             random_schedule_seed=0,
         ),
+        "bposd-minsum": SinterDecoder_BPOSD(
+            bp_method="minimum_sum",
+        ),
+        "bposd-serial-minsum": SinterDecoder_BPOSD(
+            schedule="serial",
+            random_schedule_seed=0,
+            bp_method="minimum_sum",
+        ),
     }
     try:
         from stimbposd.sinter_bp_lsd import SinterDecoder_BPLSD, HAS_LSD
@@ -159,6 +167,14 @@ def sinter_decoders() -> Dict[str, Decoder]:
             decoders["bplsd-serial"] = SinterDecoder_BPLSD(
                 schedule="serial",
                 random_schedule_seed=0,
+            )
+            decoders["bplsd-minsum"] = SinterDecoder_BPLSD(
+                bp_method="minimum_sum",
+            )
+            decoders["bplsd-serial-minsum"] = SinterDecoder_BPLSD(
+                schedule="serial",
+                random_schedule_seed=0,
+                bp_method="minimum_sum",
             )
     except ImportError:
         pass
