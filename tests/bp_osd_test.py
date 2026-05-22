@@ -83,3 +83,48 @@ def test_sinter_decode_bivariate_bicycle(
     assert result.discards == 0
     assert 0 <= result.errors <= 2
     assert result.shots == 20
+
+
+def test_noiseless_circuit():
+    test_circ = stim.Circuit.generated(
+        "repetition_code:memory",
+        rounds=25,
+        distance=9,
+        before_round_data_depolarization=0,
+        before_measure_flip_probability=0,
+    )
+    bposd = BPOSD(test_circ.detector_error_model(), max_bp_iters=20)
+
+    # Test single decode
+    syndrome = np.zeros(bposd.num_detectors, dtype=np.uint8)
+    prediction = bposd.decode(syndrome)
+    assert np.all(prediction == 0)
+    assert prediction.shape == (test_circ.num_observables,)
+
+    # Test batch decode
+    num_shots = 100
+    shots = np.zeros((num_shots, bposd.num_detectors), dtype=np.uint8)
+    predictions = bposd.decode_batch(shots)
+    assert np.all(predictions == 0)
+    assert predictions.shape == (num_shots, test_circ.num_observables)
+
+
+def test_sinter_decode_noiseless_repetition_code():
+    circuit = stim.Circuit.generated(
+        "repetition_code:memory",
+        rounds=3,
+        distance=3,
+        before_round_data_depolarization=0,
+        before_measure_flip_probability=0,
+    )
+    result = sample_decode(
+        circuit_obj=circuit,
+        circuit_path=None,
+        dem_obj=circuit.detector_error_model(decompose_errors=True),
+        dem_path=None,
+        num_shots=1000,
+        decoder="bposd",
+        custom_decoders={"bposd": SinterDecoder_BPOSD()},
+    )
+    assert result.errors == 0
+    assert result.shots == 1000
