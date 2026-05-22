@@ -144,4 +144,10 @@ class SinterDecoder_BPOSD(Decoder):
 
 
 def sinter_decoders() -> Dict[str, Decoder]:
-    return {"bposd": SinterDecoder_BPOSD()}
+    return {
+        "bposd": SinterDecoder_BPOSD(),
+        "bposd-serial": SinterDecoder_BPOSD(
+            schedule="serial",
+            random_schedule_seed=0,
+        ),
+    }
