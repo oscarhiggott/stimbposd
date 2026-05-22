@@ -65,7 +65,7 @@ class BPOSD:
             max_iter=max_bp_iters,
             bp_method=bp_method,
             priors=self._matrices.priors,
-            osd_order=min(osd_order, max_osd_order),
+            osd_order=max(0, min(osd_order, max_osd_order)),
             osd_method=osd_method,
             input_vector_type="syndrome",
             **bposd_kwargs,
