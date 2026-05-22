@@ -1,4 +1,4 @@
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from stimbposd.bp_osd import BPOSD  # noqa: F401
 from stimbposd.sinter_bp_osd import SinterDecoder_BPOSD, sinter_decoders  # noqa: F401
